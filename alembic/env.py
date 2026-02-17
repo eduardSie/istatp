@@ -4,16 +4,24 @@ import os
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from src.models.base import Base
-import src.models.event  
+import src.models.country
+import src.models.city
+import src.models.organizer
+import src.models.tag
+import src.models.user
+import src.models.event
+import src.models.bookmark
+import src.models.audit_log
 
 config = context.config
 
 db_url = os.getenv("DB_URL")
 if not db_url:
-    raise RuntimeError("DB_URL or DATABASE_URL not set for Alembic")
+    raise RuntimeError("DB_URL not set for Alembic")
 
 config.set_main_option("sqlalchemy.url", db_url)
 
@@ -24,7 +32,6 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -32,25 +39,18 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-        )
-
+        context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}EventHub{% endblock %} — Professional Events Aggregator</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="container">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">Event<span>Hub</span></a>
+
+      <div class="nav__links">
+        <a href="/" {% if request.url.path == '/' %}class="active"{% endif %}>Events</a>
+        {% if user and user.role == 'admin' %}
+        <a href="/admin" {% if '/admin' in request.url.path %}class="active"{% endif %}>Admin</a>
+        {% endif %}
+      </div>
+
+      <div class="nav__auth">
+        {% if user %}
+          <span class="nav__user">Signed in as <strong>{{ user.email }}</strong></span>
+          <a href="/bookmarks" class="btn btn-ghost btn-sm">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+            Bookmarks
+          </a>
+          <a href="/logout" class="btn btn-ghost btn-sm">Logout</a>
+        {% else %}
+          <a href="/login" class="btn btn-ghost btn-sm">Login</a>
+          <a href="/register" class="btn btn-primary btn-sm">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── FLASH MESSAGES ── -->
+{% if messages %}
+<div class="container" style="padding-top:12px;">
+  {% for cat, msg in messages %}
+    <div class="alert alert-{{ cat }}">{{ msg }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__logo">EventHub</div>
+      <div class="footer__copy">© 2026 Professional Events Aggregator</div>
+    </div>
+  </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

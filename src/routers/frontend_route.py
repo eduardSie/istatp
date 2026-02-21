@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(include_in_schema=False)
 
 # ── Templates ──────────────────────────────────────────────────────
-BASE_DIR = os.path.dirname(os.path.dirname(__file__)) 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # src/
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 # ── JWT settings (mirrors auth.py) ────────────────────────────────

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Bookmarks{% endblock %}
+
+{% block content %}
+<div class="bookmarks-page">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Your Bookmarks</h1>
+      <p class="page-sub">{{ bookmarks|length }} saved event{{ 's' if bookmarks|length != 1 else '' }}</p>
+    </div>
+
+    {% if bookmarks %}
+    <div class="events-grid" style="margin:0;background:var(--border);">
+      {% for bm in bookmarks %}
+      {% set event = bm.event %}
+      <article class="card">
+        <div class="card__img">
+          {% if event.image_url %}
+            <img src="{{ event.image_url }}" alt="{{ event.title }}" loading="lazy">
+          {% else %}
+            <div class="card__img-placeholder">◈</div>
+          {% endif %}
+        </div>
+
+        <div class="card__body">
+          <div class="card__tags">
+            {% for tag in event.tags %}
+              <span class="tag">{{ tag.name }}</span>
+            {% endfor %}
+            {% if event.is_online %}<span class="online-badge">Online</span>{% endif %}
+          </div>
+
+          <h2 class="card__title">
+            <a href="/event/{{ event.id }}">{{ event.title }}</a>
+          </h2>
+
+          <div class="card__meta mt-auto">
+            <div class="meta-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              {{ event.date_start.strftime('%d %b %Y, %H:%M') if event.date_start else '—' }}
+            </div>
+            <div class="meta-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+              </svg>
+              Saved {{ bm.added_at.strftime('%d %b %Y') if bm.added_at else '' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="card__footer">
+          {% if event.price == 0 or event.price is none %}
+            <span class="price--free">Free</span>
+          {% else %}
+            <span class="price">$ {{ "%.2f"|format(event.price|float) }}</span>
+          {% endif %}
+          <form method="POST" action="/bookmarks/{{ event.id }}/remove" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty">
+      <div class="empty__icon">◈</div>
+      <div class="empty__title">No bookmarks yet</div>
+      <div class="empty__sub">Browse events and save the ones you're interested in.</div>
+      <br>
+      <a href="/" class="btn btn-primary">Browse events</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-card__title">Create account</h1>
+    <p class="auth-card__sub">Join EventHub to bookmark events and track your professional calendar.</p>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/register">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input
+          type="email" name="email" class="form-control"
+          placeholder="you@example.com" required
+          value="{{ email or '' }}"
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input
+          type="password" name="password" class="form-control"
+          placeholder="At least 8 characters" required minlength="8"
+        >
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;">
+        Create account
+      </button>
+    </form>
+
+    <div class="auth-card__footer">
+      Already have an account? <a href="/login">Sign in →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

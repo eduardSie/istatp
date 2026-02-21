@@ -1,4 +1,4 @@
-# ЭТАП 1: Сборка зависимостей (Builder)
+# ── Stage 1: Builder ──────────────────────────────────────────────
 FROM python:3.12-slim AS builder
 
 WORKDIR /app
@@ -18,7 +18,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ЭТАП 2: Финальный образ (Runner)
+# ── Stage 2: Runner ───────────────────────────────────────────────
 FROM python:3.12-slim AS runner
 
 WORKDIR /app
@@ -46,4 +46,4 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]

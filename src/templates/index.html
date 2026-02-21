@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__label">Professional events aggregator</div>
+    <h1 class="hero__title">
+      Discover<br><em>world-class</em><br>events
+    </h1>
+    <p class="hero__sub">
+      Conferences, workshops, and meetups for professionals.
+      Curated, structured, always up to date.
+    </p>
+    {% if total_events is defined %}
+    <div class="hero__stats">
+      <div class="stat">
+        <div class="stat__num">{{ total_events }}</div>
+        <div class="stat__label">Events</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">{{ total_organizers }}</div>
+        <div class="stat__label">Organizers</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── FILTERS ── -->
+<div class="container">
+  <div class="filter-bar">
+    <form method="GET" action="/">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" name="search" placeholder="Search events…" value="{{ search or '' }}">
+      </div>
+
+      <select name="is_online" class="filter-select" onchange="this.form.submit()">
+        <option value="">All formats</option>
+        <option value="true"  {% if is_online == 'true'  %}selected{% endif %}>Online</option>
+        <option value="false" {% if is_online == 'false' %}selected{% endif %}>In-person</option>
+      </select>
+
+      <select name="organizer_id" class="filter-select" onchange="this.form.submit()">
+        <option value="">All organizers</option>
+        {% for org in organizers %}
+        <option value="{{ org.id }}" {% if organizer_id|string == org.id|string %}selected{% endif %}>{{ org.name }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="tag_id" class="filter-select" onchange="this.form.submit()">
+        <option value="">All tags</option>
+        {% for tag in tags %}
+        <option value="{{ tag.id }}" {% if tag_id|string == tag.id|string %}selected{% endif %}>{{ tag.name }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit" class="btn btn-primary btn-sm">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Search
+      </button>
+
+      {% if search or is_online or organizer_id or tag_id %}
+      <a href="/" class="btn btn-ghost btn-sm">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- ── EVENTS GRID ── -->
+<section class="events-section">
+  <div class="grid-wrap container">
+    {% if events %}
+    <div class="events-grid">
+      {% for event in events %}
+      <article class="card">
+        <div class="card__img">
+          {% if event.image_url %}
+            <img src="{{ event.image_url }}" alt="{{ event.title }}" loading="lazy">
+          {% else %}
+            <div class="card__img-placeholder">◈</div>
+          {% endif %}
+        </div>
+
+        <div class="card__body">
+          <div class="card__tags">
+            {% for tag in event.tags %}
+              <span class="tag">{{ tag.name }}</span>
+            {% endfor %}
+            {% if event.is_online %}
+              <span class="online-badge">Online</span>
+            {% endif %}
+          </div>
+
+          <h2 class="card__title">
+            <a href="/event/{{ event.id }}">{{ event.title }}</a>
+          </h2>
+
+          {% if event.description %}
+          <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-top:8px;
+                     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+            {{ event.description }}
+          </p>
+          {% endif %}
+
+          <div class="card__meta mt-auto">
+            <div class="meta-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              {{ event.date_start.strftime('%d %b %Y, %H:%M') if event.date_start else '—' }}
+            </div>
+            {% if event.location_address %}
+            <div class="meta-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              {{ event.location_address }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="card__footer">
+          {% if event.price == 0 or event.price is none %}
+            <span class="price--free">Free</span>
+          {% else %}
+            <span class="price">$ {{ "%.2f"|format(event.price|float) }}</span>
+          {% endif %}
+          <a href="/event/{{ event.id }}" class="btn btn-ghost btn-sm">View →</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty">
+      <div class="empty__icon">◈</div>
+      <div class="empty__title">No events found</div>
+      <div class="empty__sub">Try adjusting your filters or search query.</div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.querySelector('.filter-bar form').addEventListener('submit', function(e) {
+    // Remove inputs with empty values so they don't appear in URL at all
+    this.querySelectorAll('input, select').forEach(el => {
+      if (el.value === '') el.disabled = true;
+    });
+  });
+</script>
+{% endblock %}

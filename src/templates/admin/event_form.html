@@ -129,21 +129,21 @@
       <div class="form-group">
         <label class="form-label">Location Address</label>
         <input type="text" name="location_address" class="form-control"
-          value="{{ event.location_address if event else '' }}"
+          value="{{ event.location_address if event and event.location_address else '' }}"
           placeholder="123 Conference Ave, City">
       </div>
 
       <div class="form-group">
         <label class="form-label">Website URL</label>
         <input type="url" name="website_url" class="form-control"
-          value="{{ event.website_url if event else '' }}"
+          value="{{ event.website_url if event and event.website_url else '' }}"
           placeholder="https://event.example.com">
       </div>
 
       <div class="form-group">
         <label class="form-label">Description</label>
         <textarea name="description" class="form-control" rows="5"
-          placeholder="Describe the event…">{{ event.description if event else '' }}</textarea>
+          placeholder="Describe the event…">{{ event.description if event and event.description else '' }}</textarea>
       </div>
 
       <div class="form-group">

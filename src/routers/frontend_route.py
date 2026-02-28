@@ -8,7 +8,7 @@ import logging
 import os
 import uuid
 import io
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional, List
 
@@ -618,7 +618,7 @@ async def do_admin_event_edit(
     for tid in tag_ids:
         db.add(EventTag(event_id=event_id, tag_id=tid))
 
-    event.updated_at = datetime.utcnow()
+    event.updated_at = datetime.now(timezone.utc)
     await db.commit()
 
     return RedirectResponse("/admin/events", status_code=302)

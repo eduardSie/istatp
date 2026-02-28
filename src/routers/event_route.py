@@ -3,7 +3,7 @@ import logging
 import os
 import boto3
 from botocore.client import Config
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional, List
 
@@ -249,7 +249,7 @@ async def update_event(
         for tid in payload.tag_ids:
             db.add(EventTag(event_id=event_id, tag_id=tid))
 
-    event.updated_at = datetime.utcnow()
+    event.updated_at = datetime.now(timezone.utc)
     await db.commit()
 
     result = await db.execute(
